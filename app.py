@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import openai
 import os
 from difflib import get_close_matches
@@ -6,22 +7,6 @@ from functools import lru_cache
 from tenacity import retry, wait_random_exponential, stop_after_attempt
 import inflect
 p = inflect.engine()
-
-// At the top of your API route file
-export default async function handler(req, res) {
-  // Add CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*'); // Or specify domains
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
-  // Handle preflight request
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  
-  // Your existing code here...
-}
-
 
 plural_map = {
     "lily": "lilies",
@@ -31,6 +16,7 @@ plural_map = {
 }
 
 app = Flask(__name__)
+CORS(app)
 
 # 🔑 Set your OpenAI API key
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -154,7 +140,7 @@ def flower_check():
     # Unknown flower → ask AI
     ai_response = get_flower_safety(flower)
     return jsonify({"response": ai_response})
-
+  
 @app.route("/", methods=["GET"])
 def home():
     return jsonify({
